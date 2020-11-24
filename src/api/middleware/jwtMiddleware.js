@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken')
 
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_TOKEN = process.env.JWT_TOKEN
 
 exports.verify_token = (req,res,next) => {
     let token = req.headers['authorization']
 
     if(typeof token != 'undefined'){
-        jwt.verify(token, JWT_SECRET, (error) => {
+        jwt.verify(token, JWT_TOKEN, (error) => {
             if(error){
                 res.sendStatus(403)
             }

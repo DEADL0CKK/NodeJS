@@ -1,10 +1,9 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt')
 
 exports.create_an_user = (req, res) => {
-    let new_user = new User(req.body);
-
-    new_user.save((error, user) => {
+    bcrypt.hash(req.body.password, 10, (error, hash) => {
         if (error) {
             res.status(500);
             console.log(error);
@@ -12,12 +11,32 @@ exports.create_an_user = (req, res) => {
                 message: "Erreur serveur."
             })
         } else {
-            res.status(201);
-            res.json({
-                message: `Utilisateur crée :  ${user.email}`
+            let new_user = new User({
+                ...req.body,
+                password: hash
+            });
+            console.log(new_user)
+            new_user.save((error, user) => {
+                if (error) {
+                    res.status(500);
+                    console.log(error);
+                    res.json({
+                        message: "Erreur serveur."
+                    })
+                } else {
+                    res.status(201);
+                    res.json({
+                        message: `Utilisateur crée :  ${user.email}`
+                    })
+                }
             })
         }
     })
+
+
+
+
+
 }
 
 exports.login_an_user = (req, res) => {
@@ -31,34 +50,39 @@ exports.login_an_user = (req, res) => {
                 message: "Erreur serveur."
             })
         } else {
-
-            if (user.password === req.body.password) {
-                jwt.sign({
-                        email: user.email,
-                        role: "user"
-                    },
-                    process.env.JWT_SECRET, {
-                        expireIn: '30 days'
-                    }, (error, token) => {
-                        if (error) {
-                            res.status(400);
-                            console.log("ERREURR", error);
-                            res.json({
-                                message: "Mot de passe ou email erroné."
-                            })
-                        } else {
-                            res.json({
-                                token
-                            })
-                        }
+            bcrypt.compare(req.body.password, user.password, (error, result) => {
+                if (error) {
+                    res.status(500);
+                    console.log(error);
+                    res.json({
+                        message: "Erreur serveur."
                     })
-            } else {
-                res.status(401);
-                console.log(error);
-                res.json({
-                    message: "Mot de passe ou email erroné."
-                })
-            }
+                } else {
+                    jwt.sign({
+                            email: user.email,
+                            role: "user"
+                        },
+                        process.env.JWT_TOKEN, {
+                            expiresIn: '30 days'
+                        }, (error, token) => {
+                            if (error) {
+                                res.status(400);
+                                console.log("ERREURR", error);
+                                res.json({
+                                    message: "Mot de passe ou email erroné."
+                                })
+                            } else {
+                                console.log({
+                                    token
+                                })
+                                res.json({
+                                    token
+                                })
+                            }
+                        })
+
+                }
+            });
 
         }
 

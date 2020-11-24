@@ -33,7 +33,6 @@ exports.create_a_comment = (req, res) => {
             // req.body.post = req.params.post_id;
             let new_comment = new Comment({
                 post_id: req.params.post_id,
-                message: message,
                 ...req.body
             });
             // new_comment.post_id = req.params.post_id;
