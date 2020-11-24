@@ -8,6 +8,7 @@ let commentSchema = new Schema({
     },
     message: {
         type: String,
+        required: "Le message est requis"
     },
     created_at: {
         type: Date,

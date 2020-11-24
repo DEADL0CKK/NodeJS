@@ -1,6 +1,6 @@
 const Comment = require('../models/commentModel');
 const Post = require('../models/postModel');
-const axios = require('axios');
+
 
 exports.list_all_comments = (req, res) => {
     Comment.find({
@@ -21,16 +21,6 @@ exports.list_all_comments = (req, res) => {
 
 exports.create_a_comment = (req, res) => {
     // let message = req.body.message
-    if (!req.body.message) {
-        axios.get('https://loripsum.net/api/plaintext')
-            .then(response => {
-                req.body.message = response.data;
-                console.log(response.data);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
 
     Post.findById(req.params.post_id, (error, post) => {
         if (error) {
