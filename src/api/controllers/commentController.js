@@ -20,10 +20,11 @@ exports.list_all_comments = (req, res) => {
 }
 
 exports.create_a_comment = (req, res) => {
-
+    // let message = req.body.message
     if (!req.body.message) {
         axios.get('https://loripsum.net/api/plaintext')
             .then(response => {
+                req.body.message = response.data;
                 console.log(response.data);
             })
             .catch(error => {
@@ -42,6 +43,7 @@ exports.create_a_comment = (req, res) => {
             // req.body.post = req.params.post_id;
             let new_comment = new Comment({
                 post_id: req.params.post_id,
+                message: message,
                 ...req.body
             });
             // new_comment.post_id = req.params.post_id;
